@@ -10,22 +10,26 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  imageName: 'pipelines-javascript-docker'
+  imageName: 'pipelines-docker'
 
 steps:
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.8'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
 - task: Docker@2
   inputs:
-    command: 'buildAndPush'
-    Dockerfile: 'app/Dockerfile'
+    containerRegistry: 'devce2petcdpmaacr01-service-connection'
+    repository: 'seaslug'
+    command: 'pull'
+    arguments: "seaslug:version-v1.0.0"
+- task: Docker@2
+  inputs:
+    containerRegistry: 'YourDockerRegistryServiceConnection'
+    command: 'tag'
+    arguments: 'devce2petcdpmaacr01-service-connection/seaslug:version-v1.0.0 prdce2petcdpmaacr01-service-connection/seaslug:version-v1.0.0'
+- task: Docker@2
+  inputs:
+    containerRegistry: 'prdce2petcdpmaacr01-service-connection'
+    repository: 'seaslug'
+    command: 'push'
+    tags: 'version-v1.0.0'
+
 
  
